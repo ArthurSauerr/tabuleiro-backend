@@ -4,7 +4,7 @@ CREATE TABLE users(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    password VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE character(
@@ -29,7 +29,7 @@ CREATE TABLE attributes(
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     value INT NOT NULL,
-    character_id SERIAL NOT NULL,
+    character_id INT NOT NULL,
     CONSTRAINT fk_character FOREIGN KEY(character_id) REFERENCES character(id)
 );
 
@@ -37,7 +37,7 @@ CREATE TABLE inventory(
     id SERIAL PRIMARY KEY,
     item VARCHAR(100) NOT NULL,
     quantity INT NOT NULL,
-    weight NUMERIC(10,2)
-    character_id SERIAL NOT NULL, 
+    weight NUMERIC(10,2),
+    character_id INT NOT NULL, 
     CONSTRAINT fk_character FOREIGN KEY(character_id) REFERENCES character(id)
 );
