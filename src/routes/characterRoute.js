@@ -6,5 +6,6 @@ const { validateToken } = require('../security/auth');
 router.post('/create', validateToken, characterController.newCharacter);
 router.get('/list-of-characters', validateToken, characterController.readAllCharacters);
 router.get('/get-character', validateToken, characterController.readCharacterById);
+router.put('/update', validateToken, characterController.updateCharacter);
 
 module.exports = router;
