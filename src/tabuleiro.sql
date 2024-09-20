@@ -41,3 +41,12 @@ CREATE TABLE inventory(
     character_id INT NOT NULL, 
     CONSTRAINT fk_character FOREIGN KEY(character_id) REFERENCES character(id)
 );
+
+CREATE TABLE abilities(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR (100) NOT NULL,
+    description TEXT(255),
+    value INT NOT NULL,
+    character_id INT NOT NULL,
+    CONSTRAINT fk_character FOREIGN KEY(character_id) REFERENCES character(id)
+);
