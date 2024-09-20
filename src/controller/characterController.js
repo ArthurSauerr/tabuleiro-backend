@@ -1,4 +1,5 @@
 const pool = require('../config/database');
+const CharacterUpdateDTO = require('../dto/CharacterUpdateDTO');
 
 exports.newCharacter = async (req, res) => {
     const { id } = req.user;
@@ -66,3 +67,47 @@ exports.readCharacterById = async(req, res) => {
         res.status(500).send('Erro ao buscar personagem!');
     }
 }
+
+exports.updateCharacter = async (req, res) => {
+    const { char_id } = req.body;
+    const { id } = req.user;
+    const characterUpdateDTO = new CharacterUpdateDTO(req.body);
+    const updateData = characterUpdateDTO.sanitize();
+
+    try {
+        const fields = [];
+        const values = [];
+        let index = 1;
+
+        for (const key in updateData) {
+            fields.push(`${key} = $${index}`);
+            values.push(updateData[key]);
+            index++;
+        }
+
+        if (fields.length === 0) {
+            return res.status(400).send('Nenhum campo para atualizar.');
+        }
+
+        values.push(id, char_id);
+        const updateQuery = `
+            UPDATE character
+            SET ${fields.join(', ')}
+            WHERE user_id = $${index} AND id = $${index + 1}
+            RETURNING *;
+        `;
+
+        const client = await pool.connect();
+        const updatedCharacter = await client.query(updateQuery, values);
+        client.release();
+
+        if (updatedCharacter.rows.length > 0) {
+            return res.status(200).json(updatedCharacter.rows[0]);
+        } else {
+            return res.status(404).send('Personagem não encontrado.');
+        }
+    } catch (error) {
+        console.error('Erro ao atualizar personagem: ', error);
+        res.status(500).send('Erro ao atualizar personagem!');
+    }
+};

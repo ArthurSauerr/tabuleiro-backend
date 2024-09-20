@@ -29,7 +29,7 @@ exports.signup = async (req, res) => {
         console.error('Erro ao cadastrar usuário: ', error);
         res.status(500).json({ error: 'Erro ao cadastrar usuário!' });
     }
-};
+}
 
 exports.signin = async (req, res) => {
     const { email, password } = req.body;
@@ -54,7 +54,7 @@ exports.signin = async (req, res) => {
         console.error('Erro ao realizar login: ', error);
         res.status(500).send('Erro ao realizar login!');
     }
-};
+}
 
 exports.readUser = async (req, res) => {
     const { id } = req.body;
@@ -72,4 +72,4 @@ exports.readUser = async (req, res) => {
         console.error('Erro ao buscar usuário: ', error);
         res.status(500).send('Erro ao buscar usuário!');
     }
-};
+}
