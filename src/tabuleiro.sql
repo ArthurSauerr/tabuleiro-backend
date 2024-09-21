@@ -12,6 +12,8 @@ CREATE TABLE character(
     name VARCHAR(100) NOT NULL,
     age INT NOT NULL,
     class VARCHAR(100) NOT NULL,
+    sub_class VARCHAR(100),
+    nacionality VARCHAR(100),
     max_health NUMERIC(10,2),
     current_health NUMERIC(10,2),
     max_stamina NUMERIC(10,2),
@@ -38,6 +40,7 @@ CREATE TABLE inventory(
     item VARCHAR(100) NOT NULL,
     quantity INT NOT NULL,
     weight NUMERIC(10,2),
+    dice VARCHAR(10),
     character_id INT NOT NULL, 
     CONSTRAINT fk_character FOREIGN KEY(character_id) REFERENCES character(id)
 );
@@ -46,7 +49,16 @@ CREATE TABLE abilities(
     id SERIAL PRIMARY KEY,
     name VARCHAR (100) NOT NULL,
     description TEXT(255),
-    value INT NOT NULL,
+    character_id INT NOT NULL,
+    CONSTRAINT fk_character FOREIGN KEY(character_id) REFERENCES character(id)
+);
+
+CREATE TABLE magics(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT(255),
+    cost INT,
+    cost_type VARCHAR(100),
     character_id INT NOT NULL,
     CONSTRAINT fk_character FOREIGN KEY(character_id) REFERENCES character(id)
 );
