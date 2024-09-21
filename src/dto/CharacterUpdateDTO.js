@@ -1,6 +1,7 @@
 class CharacterUpdateDTO {
     constructor({ 
-        name, age, char_class, 
+        name, age, char_class,
+        char_subclass, nacionality, 
         max_health, current_health, max_stamina, 
         current_stamina, max_mana, current_mana, 
         max_sanity, current_sanity, money
@@ -8,6 +9,8 @@ class CharacterUpdateDTO {
         this.name = name;
         this.age = age;
         this.char_class = char_class;
+        this.char_subclass = char_subclass;
+        this.nacionality = nacionality;
         this.max_health = max_health;
         this.current_health = current_health;
         this.max_stamina = max_stamina;
