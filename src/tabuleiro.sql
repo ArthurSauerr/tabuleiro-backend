@@ -40,7 +40,8 @@ CREATE TABLE inventory(
     item VARCHAR(100) NOT NULL,
     quantity INT NOT NULL,
     weight NUMERIC(10,2),
-    dice VARCHAR(10),
+    diceNumber INT,
+    diceQtd INT,
     character_id INT NOT NULL, 
     CONSTRAINT fk_character FOREIGN KEY(character_id) REFERENCES character(id)
 );
@@ -48,17 +49,19 @@ CREATE TABLE inventory(
 CREATE TABLE abilities(
     id SERIAL PRIMARY KEY,
     name VARCHAR (100) NOT NULL,
-    description TEXT(255),
+    description TEXT,
     character_id INT NOT NULL,
     CONSTRAINT fk_character FOREIGN KEY(character_id) REFERENCES character(id)
 );
 
-CREATE TABLE magics(
+CREATE TABLE spells(
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    description TEXT(255),
+    description TEXT,
     cost INT,
     cost_type VARCHAR(100),
+    diceNumber INT,
+    diceQtd INT,
     character_id INT NOT NULL,
     CONSTRAINT fk_character FOREIGN KEY(character_id) REFERENCES character(id)
 );

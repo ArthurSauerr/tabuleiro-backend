@@ -33,7 +33,7 @@ exports.newCharacter = async (req, res) => {
     }
 }
 
-exports.readAllCharacters = async(req, res) => {
+exports.readAllCharacters = async (req, res) => {
     const { id } = req.user;
 
     try { 
@@ -51,7 +51,7 @@ exports.readAllCharacters = async(req, res) => {
     }
 }
 
-exports.readCharacterById = async(req, res) => {
+exports.readCharacterById = async (req, res) => {
     const { id } = req.user;
     const { char_id } = req.body;
 
@@ -69,6 +69,52 @@ exports.readCharacterById = async(req, res) => {
         res.status(500).send('Erro ao buscar personagem!');
     }
 }
+
+exports.readAllInfoCharacter = async (req, res) => {
+    const { id } = req.user;
+    const { char_id } = req.body;
+
+    try {
+        const client = await pool.connect();
+        const checkUser = await client.query('SELECT * FROM character WHERE user_id = $1 AND id = $2', [id, char_id]);
+        if (checkUser.rows.length === 0) {
+            return res.status(403).send('Você não tem permissão para utilizar esse personagem!');
+        }
+
+        const characterInfo = await client.query(
+            'SELECT * FROM character WHERE id = $1', [char_id]
+        );
+
+        const attributesInfo = await client.query(
+            'SELECT * FROM attributes WHERE character_id = $1', [char_id]
+        );
+
+        const abilitiesInfo = await client.query(
+            'SELECT * FROM abilities WHERE character_id = $1', [char_id]
+        );
+
+        const spellsInfo = await client.query(
+            'SELECT * FROM spells WHERE character_id = $1', [char_id]
+        );
+
+        const inventoryInfo = await client.query(
+            'SELECT * FROM inventory WHERE character_id = $1', [char_id]
+        );
+        client.release();
+
+        const response = {
+            character: characterInfo.rows[0],
+            attributes: attributesInfo.rows,
+            abilities: abilitiesInfo.rows,
+            spells: spellsInfo.rows,
+            inventory: inventoryInfo.rows
+        };
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Erro ao buscar personagem: ', error);
+        res.status(500).send('Erro ao buscar personagem!');
+    }
+};
 
 exports.updateCharacter = async (req, res) => {
     const { char_id } = req.body;
@@ -100,16 +146,42 @@ exports.updateCharacter = async (req, res) => {
         `;
 
         const client = await pool.connect();
-        const updatedCharacter = await client.query(updateQuery, values);
-        client.release();
-
-        if (updatedCharacter.rows.length > 0) {
-            return res.status(200).json(updatedCharacter.rows[0]);
+        const checkUser = await client.query('SELECT * FROM character WHERE user_id = $1 AND id = $2', [id, char_id]);
+        if (checkUser.rows.length > 0) {
+            const updatedCharacter = await client.query(updateQuery, values);
+            client.release();
+            if (updatedCharacter.rows.length > 0) {
+                return res.status(200).json(updatedCharacter.rows[0]);
+            } else {
+                return res.status(404).send('Personagem não encontrado, ou não autorizado.');
+            }
         } else {
-            return res.status(404).send('Personagem não encontrado.');
+            res.status(403).send('Você não tem permissão para utilizar esse personagem!');
         }
     } catch (error) {
         console.error('Erro ao atualizar personagem: ', error);
         res.status(500).send('Erro ao atualizar personagem!');
     }
-};
+}
+
+exports.deleteCharacter = async (req, res) => {
+    const { id } = req.user;
+    const { char_id } = req.body;
+
+    try {
+        const client = await pool.connect();
+        const checkUser = await client.query('SELECT * FROM character WHERE user_id = $1 AND id = $2', [id, char_id]);
+        if(checkUser.rows.length > 0){
+            await client.query('DELETE FROM abilities WHERE character_id = $1', [char_id]);
+            await client.query('DELETE FROM attributes WHERE character_id = $1', [char_id]);
+            await client.query('DELETE FROM inventory WHERE character_id = $1', [char_id]);
+            await client.query('DELETE FROM character WHERE id = $1', [char_id]);
+            return res.status(200).send('Personagem excluido com sucesso.');
+        } else {
+            res.status(403).send('Você não tem permissão para utilizar esse personagem!');
+        }
+    } catch (error) {
+        console.error('Erro ao excluir personagem: ', error);
+        res.status(500).send('Erro ao excluir personagem!');
+    }
+}

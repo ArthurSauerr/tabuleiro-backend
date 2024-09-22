@@ -1,10 +1,11 @@
-class InventoryUpdateDTO {
+class SpellUpdateDTO {
     constructor({ 
-        item, quantity, weight, diceNumber, diceQtd
+        name, description, cost, cost_type, diceNumber, diceQtd
     }) {
-        this.item = item;
-        this.quantity = quantity;
-        this.weight = weight;
+        this.name = name;
+        this.description = description;
+        this.cost = cost;
+        this.cost_type = cost_type;
         this.diceNumber = diceNumber;
         this.diceQtd = diceQtd;
     }
@@ -20,4 +21,4 @@ class InventoryUpdateDTO {
     }
 }
 
-module.exports = InventoryUpdateDTO;
+module.exports = SpellUpdateDTO;

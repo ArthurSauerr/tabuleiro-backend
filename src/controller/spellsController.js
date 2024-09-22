@@ -1,29 +1,29 @@
 const pool = require('../config/database');
-const AbilityUpdateDTO = require('../dto/AbilityUpdateDTO');
+const SpellUpdateDTO = require('../dto/SpellUpdateDTO');
 
-exports.newAbility= async (req, res) => {
+exports.newSpell = async (req, res) => {
     const { id } = req.user;
-    const { name, description, char_id} = req.body;
+    const { name, description, cost, cost_type, diceNumber, diceQtd, char_id } = req.body;
 
     try { 
         const client = await pool.connect();
         const checkUser = await client.query('SELECT * FROM character WHERE user_id = $1 AND id = $2', [id, char_id]);
         if (checkUser.rows.length > 0) {
-            await client.query('INSERT INTO abilities (name, description, character_id) VALUES ($1, $2, $3) RETURNING *',
-                [name, description, char_id]
+            await client.query('INSERT INTO spells (name, description, cost, cost_type, diceNumber, diceQtd, character_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+                [name, description, cost, cost_type, diceNumber, diceQtd, char_id]
             );
             client.release();
-            res.status(200).send('Habilidade criada com sucesso.');
+            res.status(200).send('Magia criada com sucesso.');
         } else {
             res.status(403).send('Você não tem permissão para utilizar esse personagem!');
         }
     } catch (error) { 
-        console.error('Erro ao criar nova habilidade: ', error);
-        res.status(500).send('Erro ao criar nova habilidade!');
+        console.error('Erro ao criar nova magia: ', error);
+        res.status(500).send('Erro ao criar nova magia!');
     }
 }
 
-exports.readAllAbilities = async (req, res) => {
+exports.readAllSpells = async (req, res) => {
     const { id } = req.user;
     const { char_id } = req.body;
 
@@ -31,23 +31,23 @@ exports.readAllAbilities = async (req, res) => {
         const client = await pool.connect();
         const checkUser = await client.query('SELECT * FROM character WHERE user_id = $1 AND id = $2', [id, char_id]);
         if (checkUser.rows.length > 0) {
-            const readAbilities = await client.query('SELECT * FROM abilities WHERE character_id = $1', [char_id]);
+            const readSpells = await client.query('SELECT * FROM spells WHERE character_id = $1', [char_id]);
             client.release();
-            return res.status(200).json({ abilities: readAbilities.rows });
+            return res.status(200).json({ spells: readSpells.rows });
         } else {
             res.status(403).send('Você não tem permissão para utilizar esse personagem!');
         }
     } catch (error) { 
-        console.error('Erro ao buscar habilidades: ', error);
-        res.status(500).send('Erro ao buscar habilidades!');
+        console.error('Erro ao buscar magias: ', error);
+        res.status(500).send('Erro ao buscar magias!');
     }
 }
 
-exports.updateAbility = async (req, res) => {
+exports.updateSpell = async (req, res) => {
     const { id } = req.user;
-    const { char_id, abl_id } = req.body;
-    const abilityUpdateDTO = new AbilityUpdateDTO(req.body);
-    const updateData = abilityUpdateDTO.sanitize();
+    const { char_id, spell_id } = req.body;
+    const spellUpdateDTO = new SpellUpdateDTO(req.body);
+    const updateData = spellUpdateDTO.sanitize();
 
     try {
         const fields = [];
@@ -64,9 +64,9 @@ exports.updateAbility = async (req, res) => {
             return res.status(400).send('Nenhum campo para atualizar.');
         }
 
-        values.push(char_id, abl_id);
+        values.push(char_id, spell_id);
         const updateQuery = `
-            UPDATE abilities
+            UPDATE spells
             SET ${fields.join(', ')}
             WHERE character_id = $${index} AND id = $${index + 1}
             RETURNING *;
@@ -75,37 +75,37 @@ exports.updateAbility = async (req, res) => {
         const client = await pool.connect();
         const checkUser = await client.query('SELECT * FROM character WHERE user_id = $1 AND id = $2', [id, char_id]);
         if (checkUser.rows.length > 0) {
-            const updatedAbility = await client.query(updateQuery, values);
+            const updatedSpell = await client.query(updateQuery, values);
             client.release();
-            if (updatedAbility.rows.length > 0) {
-                return res.status(200).json(updatedAbility.rows[0]);
+            if (updatedSpell.rows.length > 0) {
+                return res.status(200).json(updatedSpell.rows[0]);
             } else {
-                return res.status(404).send('Habilidade não encontrada, ou não autorizado.');
+                return res.status(404).send('Magia não encontrada, ou não autorizado.');
             }
         } else {
             res.status(403).send('Você não tem permissão para utilizar esse personagem!');
         }
     } catch (error) {
-        console.error('Erro ao atualizar habilidade: ', error);
-        res.status(500).send('Erro ao atualizar habilidade!');
+        console.error('Erro ao atualizar magia: ', error);
+        res.status(500).send('Erro ao atualizar magia!');
     }
 }
 
-exports.deleteAbility = async (req, res) => {
+exports.deleteSpell = async (req, res) => {
     const { id } = req.user;
-    const { char_id, abl_id } = req.body;
+    const { char_id, spell_id } = req.body;
 
     try {
         const client = await pool.connect();
         const checkUser = await client.query('SELECT * FROM character WHERE user_id = $1 AND id = $2', [id, char_id]);
         if (checkUser.rows.length > 0) {
-            await client.query('DELETE FROM abilities WHERE character_id = $1 AND id = $2', [char_id, abl_id]);
-            return res.status(200).send('Habilidade excluida com sucesso.')
+            await client.query('DELETE FROM spells WHERE character_id = $1 AND id = $2', [char_id, spell_id]);
+            return res.status(200).send('Magia excluida com sucesso.')
         } else {
             res.status(403).send('Você não tem permissão para utilizar esse personagem!');
         }
     } catch (error) {
-        console.error('Erro ao excluir habilidade: ', error);
-        res.status(500).send('Erro ao excluir habilidade!');
+        console.error('Erro ao excluir magia: ', error);
+        res.status(500).send('Erro ao excluir magia!');
     }
 }
