@@ -2,11 +2,6 @@ const bcrypt = require('bcryptjs');
 const pool = require('../config/database');
 const jwt = require('jsonwebtoken');
 
-function generateAccessToken(email) {
-    const payload = { email };
-    return jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: '168h' });
-}
-
 exports.signup = async (req, res) => {
     const { name, email, password } = req.body;
     const salt = await bcrypt.genSalt(10);
@@ -42,8 +37,16 @@ exports.signin = async (req, res) => {
             const user = userExists.rows[0];
             const isMatch = await bcrypt.compare(password, user.password);
             if(isMatch){
-                const token = generateAccessToken(email);
-                return res.status(200).json({ token });
+                const token = jwt.sign({ email }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
+
+                res.cookie('authToken', token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                    maxAge: 7 * 24 * 60 * 60 * 1000,
+                });
+            
+                res.status(200).json({ message: 'Login bem-sucedido!' });
             } else {
                 return res.status(400).send('Email ou senha incorretos!')
             }
@@ -55,6 +58,17 @@ exports.signin = async (req, res) => {
         res.status(500).send('Erro ao realizar login!');
     }
 }
+
+exports.logout = (req, res) => {
+    res.clearCookie('authToken', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict'
+    });
+
+    return res.status(200).send('Logout bem-sucedido!');
+};
+
 
 exports.readUser = async (req, res) => {
     const { id } = req.body;

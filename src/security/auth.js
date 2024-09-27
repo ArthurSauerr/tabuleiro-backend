@@ -2,12 +2,11 @@ const jwt = require('jsonwebtoken');
 const pool = require('../config/database');
 
 async function validateToken(req, res, next) {
-    const { authorization } = req.headers;
-    if (!authorization) {
+    const token = req.cookies.authToken;
+    if (!token) {
         return res.sendStatus(403);
     }
 
-    const token = authorization.replace('Bearer ', '');
     try {
         const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
         const userId = await getUserIdFromToken(decoded.email);
