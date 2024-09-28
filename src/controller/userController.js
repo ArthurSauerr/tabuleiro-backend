@@ -40,9 +40,9 @@ exports.signin = async (req, res) => {
                 const token = jwt.sign({ email }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
 
                 res.cookie('authToken', token, {
-                    httpOnly: true, 
-                    secure: true, 
-                    sameSite: 'strict',
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production', // Usa secure em produção
+                    sameSite: 'none', // Para permitir cookies entre domínios diferentes
                 });
 
                 res.status(200).json({ message: 'Login bem-sucedido!' });
