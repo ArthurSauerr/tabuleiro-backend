@@ -33,19 +33,18 @@ exports.signin = async (req, res) => {
         const client = await pool.connect();
         const userExists = await client.query('SELECT * FROM users WHERE email = $1', [email]);
         client.release();
-        if(userExists.rows.length > 0 ){
+        if (userExists.rows.length > 0) {
             const user = userExists.rows[0];
             const isMatch = await bcrypt.compare(password, user.password);
-            if(isMatch){
+            if (isMatch) {
                 const token = jwt.sign({ email }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
 
                 res.cookie('authToken', token, {
-                    httpOnly: false, // Temporariamente para testes
-                    secure: false, // Temporariamente para testes
-                    sameSite: 'lax', // Pode ajustar se necessário
-                    maxAge: 7 * 24 * 60 * 60 * 1000,
+                    httpOnly: true, 
+                    secure: true, 
+                    sameSite: 'strict',
                 });
-            
+
                 res.status(200).json({ message: 'Login bem-sucedido!' });
             } else {
                 return res.status(400).send('Email ou senha incorretos!')
@@ -53,21 +52,16 @@ exports.signin = async (req, res) => {
         } else {
             return res.status(404).send('Não existe um usuário cadastrado com esse email!')
         }
-    } catch(error) {
+    } catch (error) {
         console.error('Erro ao realizar login: ', error);
         res.status(500).send('Erro ao realizar login!');
     }
 }
 
 exports.logout = (req, res) => {
-    res.clearCookie('authToken', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict'
-    });
-
+    res.clearCookie('authToken');
     return res.status(200).send('Logout bem-sucedido!');
-};
+}
 
 
 exports.readUser = async (req, res) => {
@@ -77,12 +71,12 @@ exports.readUser = async (req, res) => {
         const client = await pool.connect();
         const user = await client.query('SELECT * FROM users WHERE id = $1', [id]);
         client.release();
-        if(user.rows.length > 0) {
+        if (user.rows.length > 0) {
             return res.status(200).json({ user: user.rows[0] });
         } else {
             return res.status(404).send('Usuário não encontrado.');
         }
-    } catch(error) {
+    } catch (error) {
         console.error('Erro ao buscar usuário: ', error);
         res.status(500).send('Erro ao buscar usuário!');
     }
