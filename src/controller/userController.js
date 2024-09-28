@@ -81,3 +81,13 @@ exports.readUser = async (req, res) => {
         res.status(500).send('Erro ao buscar usuário!');
     }
 }
+
+exports.checkAuth = (req, res) => {
+    const token = req.user;
+
+    if (!token) {
+        return res.json({ authenticated: false });
+    } else {
+        return res.json({ authenticated: true });
+    }
+}

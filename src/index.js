@@ -31,21 +31,6 @@ app.use('/ability', abilitiesRoutes);
 app.use('/spells', spellsRoutes);
 app.use('/dice', diceRoutes);
 
-app.get('/check-auth', (req, res) => {
-    const token = req.user;
-
-    if (!token) {
-        return res.json({ authenticated: false });
-    }
-
-    try {
-        jwt.verify(token, JWT_SECRET);
-        res.json({ authenticated: true });
-    } catch (err) {
-        res.json({ authenticated: false });
-    }
-})
-
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
