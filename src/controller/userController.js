@@ -40,9 +40,9 @@ exports.signin = async (req, res) => {
                 const token = jwt.sign({ email }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
 
                 res.cookie('authToken', token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
+                    httpOnly: false, // Temporariamente para testes
+                    secure: false, // Temporariamente para testes
+                    sameSite: 'lax', // Pode ajustar se necessário
                     maxAge: 7 * 24 * 60 * 60 * 1000,
                 });
             
