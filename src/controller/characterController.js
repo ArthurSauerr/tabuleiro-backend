@@ -53,7 +53,7 @@ exports.readAllCharacters = async (req, res) => {
 
 exports.readCharacterById = async (req, res) => {
     const { id } = req.user;
-    const { char_id } = req.body;
+    const { char_id } = req.params;
 
     try { 
         const client = await pool.connect();
@@ -72,7 +72,7 @@ exports.readCharacterById = async (req, res) => {
 
 exports.readAllInfoCharacter = async (req, res) => {
     const { id } = req.user;
-    const { char_id } = req.body;
+    const { char_id } = req.params;
 
     try {
         const client = await pool.connect();
@@ -117,7 +117,7 @@ exports.readAllInfoCharacter = async (req, res) => {
 };
 
 exports.updateCharacter = async (req, res) => {
-    const { char_id } = req.body;
+    const { char_id } = req.params;
     const { id } = req.user;
     const characterUpdateDTO = new CharacterUpdateDTO(req.body);
     const updateData = characterUpdateDTO.sanitize();
@@ -166,7 +166,7 @@ exports.updateCharacter = async (req, res) => {
 
 exports.deleteCharacter = async (req, res) => {
     const { id } = req.user;
-    const { char_id } = req.body;
+    const { char_id } = req.params;
 
     try {
         const client = await pool.connect();
