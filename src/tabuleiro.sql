@@ -31,6 +31,7 @@ CREATE TABLE attributes(
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     value INT NOT NULL,
+    dicenumber INT,
     character_id INT NOT NULL,
     CONSTRAINT fk_character FOREIGN KEY(character_id) REFERENCES character(id)
 );
