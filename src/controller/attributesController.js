@@ -93,7 +93,7 @@ exports.updateAttribute = async (req ,res) => {
 
 exports.deleteAttribute = async (req, res) => {
     const { id } = req.user;
-    const { char_id, atr_id } = req.body;
+    const { char_id, atr_id } = req.params;
 
     try {
         const client = await pool.connect();

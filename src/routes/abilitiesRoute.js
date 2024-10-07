@@ -6,6 +6,6 @@ const { validateToken } = require('../security/auth');
 router.post('/create', validateToken, abilitiesController.newAbility);
 router.get('/get-all-abilities', validateToken, abilitiesController.readAllAbilities);
 router.put('/update', validateToken, abilitiesController.updateAbility);
-router.delete('/delete', validateToken, abilitiesController.deleteAbility);
+router.delete('/delete/:char_id/:abl_id', validateToken, abilitiesController.deleteAbility);
 
 module.exports = router;
