@@ -93,7 +93,7 @@ exports.updateSpell = async (req, res) => {
 
 exports.deleteSpell = async (req, res) => {
     const { id } = req.user;
-    const { char_id, spell_id } = req.body;
+    const { char_id, spell_id } = req.params;
 
     try {
         const client = await pool.connect();

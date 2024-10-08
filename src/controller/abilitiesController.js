@@ -93,7 +93,7 @@ exports.updateAbility = async (req, res) => {
 
 exports.deleteAbility = async (req, res) => {
     const { id } = req.user;
-    const { char_id, abl_id } = req.body;
+    const { char_id, abl_id } = req.params;
 
     try {
         const client = await pool.connect();
