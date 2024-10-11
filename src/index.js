@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const port = 3000;
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: ['https://tabuleiro-gamma.vercel.app', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
