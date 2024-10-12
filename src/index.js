@@ -5,8 +5,19 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const port = 3000;
 
+const allowedOrigins = [
+    'https://tabuleiro-gamma.vercel.app', // domínio da produção
+    'http://localhost:3000' // domínio do localhost
+];
+
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: (origin, callback) => {
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true); // Permite a origem
+        } else {
+            callback(new Error('Not allowed by CORS')); // Bloqueia a origem
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));

@@ -37,7 +37,7 @@ exports.signin = async (req, res) => {
             const user = userExists.rows[0];
             const isMatch = await bcrypt.compare(password, user.password);
             if (isMatch) {
-                const token = jwt.sign({ email }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
+                const token = jwt.sign({ email }, process.env.TOKEN_SECRET, { expiresIn: '1d' });
 
                 res.cookie('authToken', token, {
                     httpOnly: true,
