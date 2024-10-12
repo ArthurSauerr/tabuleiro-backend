@@ -93,7 +93,7 @@ exports.updateInventoryItem = async (req, res) => {
 
 exports.deleteInventoryItem = async (req, res) => {
     const { id } = req.user;
-    const { char_id, item_id } = req.body;
+    const { char_id, item_id } = req.params;
 
     try {
         const client = await pool.connect();

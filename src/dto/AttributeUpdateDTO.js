@@ -1,9 +1,10 @@
 class AttributeUpdateDTO {
     constructor({ 
-        name, value
+        name, value, dicenumber
     }) {
         this.name = name;
         this.value = value;
+        this.dicenumber = dicenumber;
     }
 
     sanitize() {

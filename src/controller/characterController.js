@@ -14,7 +14,7 @@ exports.newCharacter = async (req, res) => {
     try { 
         const client = await pool.connect();
         const newCharacter = await client.query(
-            'INSERT INTO character (name, age, class, sub_class, nacionality, max_health, current_health, ' +
+            'INSERT INTO character (name, age, char_class, char_subclass, nacionality, max_health, current_health, ' +
             'max_stamina, current_stamina, max_mana, current_mana, max_sanity, current_sanity, money, user_id) ' +
             'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *',
             [
@@ -38,7 +38,7 @@ exports.readAllCharacters = async (req, res) => {
 
     try { 
         const client = await pool.connect();
-        const readCharacter = await client.query('SELECT * FROM character WHERE user_id = $1', [id]);
+        const readCharacter = await client.query('SELECT * FROM character WHERE user_id = $1 ORDER BY id', [id]);
         client.release();
         if (readCharacter.rows.length > 0) {
             return res.status(200).json({ characters: readCharacter.rows });
@@ -53,7 +53,7 @@ exports.readAllCharacters = async (req, res) => {
 
 exports.readCharacterById = async (req, res) => {
     const { id } = req.user;
-    const { char_id } = req.body;
+    const { char_id } = req.params;
 
     try { 
         const client = await pool.connect();
@@ -72,7 +72,7 @@ exports.readCharacterById = async (req, res) => {
 
 exports.readAllInfoCharacter = async (req, res) => {
     const { id } = req.user;
-    const { char_id } = req.body;
+    const { char_id } = req.params;
 
     try {
         const client = await pool.connect();
@@ -86,19 +86,19 @@ exports.readAllInfoCharacter = async (req, res) => {
         );
 
         const attributesInfo = await client.query(
-            'SELECT * FROM attributes WHERE character_id = $1', [char_id]
+            'SELECT * FROM attributes WHERE character_id = $1 ORDER BY id', [char_id]
         );
 
         const abilitiesInfo = await client.query(
-            'SELECT * FROM abilities WHERE character_id = $1', [char_id]
+            'SELECT * FROM abilities WHERE character_id = $1 ORDER BY id', [char_id]
         );
 
         const spellsInfo = await client.query(
-            'SELECT * FROM spells WHERE character_id = $1', [char_id]
+            'SELECT * FROM spells WHERE character_id = $1 ORDER BY id', [char_id]
         );
 
         const inventoryInfo = await client.query(
-            'SELECT * FROM inventory WHERE character_id = $1', [char_id]
+            'SELECT * FROM inventory WHERE character_id = $1 ORDER BY id', [char_id]
         );
         client.release();
 
@@ -117,7 +117,7 @@ exports.readAllInfoCharacter = async (req, res) => {
 };
 
 exports.updateCharacter = async (req, res) => {
-    const { char_id } = req.body;
+    const { char_id } = req.params;
     const { id } = req.user;
     const characterUpdateDTO = new CharacterUpdateDTO(req.body);
     const updateData = characterUpdateDTO.sanitize();
@@ -166,7 +166,7 @@ exports.updateCharacter = async (req, res) => {
 
 exports.deleteCharacter = async (req, res) => {
     const { id } = req.user;
-    const { char_id } = req.body;
+    const { char_id } = req.params;
 
     try {
         const client = await pool.connect();
