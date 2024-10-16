@@ -89,6 +89,10 @@ exports.readAllInfoCharacter = async (req, res) => {
             'SELECT * FROM attributes WHERE character_id = $1 ORDER BY id', [char_id]
         );
 
+        const skillsInfo = await client.query(
+            'SELECT * FROM skills WHERE character_id = $1 ORDER BY id', [char_id]
+        );
+
         const abilitiesInfo = await client.query(
             'SELECT * FROM abilities WHERE character_id = $1 ORDER BY id', [char_id]
         );
@@ -100,11 +104,13 @@ exports.readAllInfoCharacter = async (req, res) => {
         const inventoryInfo = await client.query(
             'SELECT * FROM inventory WHERE character_id = $1 ORDER BY id', [char_id]
         );
+
         client.release();
 
         const response = {
             character: characterInfo.rows[0],
             attributes: attributesInfo.rows,
+            skills: skillsInfo.rows,
             abilities: abilitiesInfo.rows,
             spells: spellsInfo.rows,
             inventory: inventoryInfo.rows
@@ -174,6 +180,7 @@ exports.deleteCharacter = async (req, res) => {
         if(checkUser.rows.length > 0){
             await client.query('DELETE FROM abilities WHERE character_id = $1', [char_id]);
             await client.query('DELETE FROM attributes WHERE character_id = $1', [char_id]);
+            await client.query('DELETE FROM skills WHERE character_id = $1', [char_id]);
             await client.query('DELETE FROM inventory WHERE character_id = $1', [char_id]);
             await client.query('DELETE FROM character WHERE id = $1', [char_id]);
             return res.status(200).send('Personagem excluido com sucesso.');
