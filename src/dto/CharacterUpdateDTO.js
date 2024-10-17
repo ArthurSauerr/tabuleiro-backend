@@ -4,7 +4,8 @@ class CharacterUpdateDTO {
         char_subclass, nacionality, 
         max_health, current_health, max_stamina, 
         current_stamina, max_mana, current_mana, 
-        max_sanity, current_sanity, money
+        max_sanity, current_sanity, money, 
+        armor_class, movement, initiative
     }) {
         this.name = name;
         this.age = age;
@@ -20,6 +21,9 @@ class CharacterUpdateDTO {
         this.max_sanity = max_sanity;
         this.current_sanity = current_sanity;
         this.money = money;
+        this.armor_class = armor_class;
+        this.movement = movement;
+        this.initiative = initiative;
     }
 
     sanitize() {
